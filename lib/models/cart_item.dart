@@ -1,30 +1,24 @@
+import 'package:ferreteria/models/producto.dart';
+
 class CartItem {
-  final String name;
-  final String variant;
-  final double price;
+  final Producto product;
   int quantity;
 
   CartItem({
-    required this.name,
-    required this.variant,
-    required this.price,
+    required this.product,
     required this.quantity,
   });
 
   factory CartItem.fromJson(Map<String, dynamic> json) {
     return CartItem(
-      name: json['name'],
-      variant: json['variant'],
-      price: json['price'],
+      product: Producto.fromJson(json['product']),
       quantity: json['quantity'],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'name': name,
-      'variant': variant,
-      'price': price,
+      'product': product.toJson(),
       'quantity': quantity,
     };
   }

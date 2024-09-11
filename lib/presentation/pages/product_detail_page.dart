@@ -176,7 +176,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                             ),
                           );
                           // Lógica para añadir al carrito
-                          _controller.addToCart(CartItem(name: product.nombre, price: product.precio, quantity: quantity, variant: ""));
+                          _controller.addToCart(CartItem(product:product, quantity: quantity));
                         },
                         child: const Text('Añadir al carrito', style: TextStyle(fontSize: 16)),
                       ),

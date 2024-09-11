@@ -173,13 +173,25 @@ class Controller {
 
   List<CartItem> cartItemsMock = [
     CartItem(
-        name: 'Producto 1', variant: 'Black / M', price: 12.00, quantity: 1),
+        product: Producto(
+            id: 1,
+            descripcion: "prod1",
+            imagen:
+                "https://cdn.discordapp.com/avatars/842525351698890752/98c10f1dc07badde3903e271e7f35131.png?size=1024",
+            nombre: "prod1",
+            precio: 12.5,
+            stock: 10),
+        quantity: 1),
     CartItem(
-        name: 'Producto 2', variant: 'Blue / 42', price: 15.00, quantity: 5),
-    CartItem(
-        name: 'Producto 3', variant: 'Gold / L', price: 20.00, quantity: 1),
-    CartItem(
-        name: 'Producto 4', variant: 'Blue / M', price: 18.00, quantity: 3),
+        product: Producto(
+            id: 4,
+            descripcion: "prod4",
+            imagen:
+                "https://cdn.discordapp.com/avatars/842525351698890752/98c10f1dc07badde3903e271e7f35131.png?size=1024",
+            nombre: "prod4",
+            precio: 12.5,
+            stock: 14),
+        quantity: 5),
   ];
 
   List<Order> mockOrders = [
@@ -220,7 +232,7 @@ class Controller {
     print("nuevo producto: ${product.id}");
 
     productos.add(product);
-    productos.forEach((Producto p){
+    productos.forEach((Producto p) {
       print(p.nombre);
     });
   }
@@ -250,16 +262,17 @@ class Controller {
 
   Future<void> addToCart(CartItem item) async {
     cartItemsMock.add(item);
-    print('Adding to cart: ${item.name}');
+    print('Adding to cart: ${item.product.nombre}');
   }
 
   Future<void> updateCartItem(CartItem item) async {
-    cartItemsMock[cartItemsMock.indexWhere((element) => element.name == item.name)] = item;
-    print('Updating cart item: ${item.name}');
+    cartItemsMock[cartItemsMock
+        .indexWhere((element) => element.product.nombre == item.product.nombre)] = item;
+    print('Updating cart item: ${item.product.nombre}');
   }
 
   Future<void> removeFromCart(String itemName, int amount) async {
-    cartItemsMock.removeWhere((element) => element.name == itemName);
+    cartItemsMock.removeWhere((element) => element.product.nombre == itemName);
     print('Removing from cart: $itemName');
   }
 
@@ -270,12 +283,12 @@ class Controller {
 
   Future<LoginResponse> login(String email, String password) async {
     //! siempre retorna true
-    if(email == 'admin'){
+    if (email == 'admin') {
       admin = true;
       return LoginResponse(logged: true, token: ' token', isAdmin: true);
-    }else {
+    } else {
       admin = false;
       return LoginResponse(logged: true, token: 'token', isAdmin: false);
-      }
+    }
   }
 }

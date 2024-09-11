@@ -45,17 +45,18 @@ class _CartPageState extends State<CartPage> {
           } else if (snapshot.hasData && snapshot.data!.isEmpty) {
             return const Center(child: Text('El carrito está vacío.'));
           } else if (snapshot.hasData) {
-            final items = snapshot.data!;
-            double total = items.fold(0, (sum, item) => sum + (item.price * item.quantity));
+            final cartItems = snapshot.data!;
+            double total = cartItems.fold(0, (sum, item) => sum + (item.product.precio * item.quantity));
 
             return Column(
               children: [
                 Expanded(
                   child: ListView.separated(
-                    itemCount: items.length,
+                    itemCount: cartItems.length,
                     separatorBuilder: (context, index) => const Divider(height: 1),
                     itemBuilder: (context, index) {
-                      final item = items[index];
+                      final cartItem = cartItems[index];
+                      final product = cartItem.product;
                       return Padding(
                         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                         child: Row(
@@ -76,16 +77,13 @@ class _CartPageState extends State<CartPage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    item.name,
+                                    product.nombre,
                                     style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
                                   ),
-                                  Text(
-                                    item.variant,
-                                    style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-                                  ),
+                                  
                                   const SizedBox(height: 4),
                                   Text(
-                                    '\$${item.price.toStringAsFixed(2)}',
+                                    '\$${product.precio.toStringAsFixed(2)}',
                                     style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
                                   ),
                                   const SizedBox(height: 8),
@@ -94,25 +92,25 @@ class _CartPageState extends State<CartPage> {
                                       IconButton(
                                         icon: const Icon(Icons.remove_circle_outline),
                                         onPressed: () {
-                                          if (item.quantity > 1) {
+                                          if (cartItem.quantity > 1) {
                                             setState(() {
-                                              item.quantity--;
-                                              _controller.updateCartItem(item);
+                                              cartItem.quantity--;
+                                              _controller.updateCartItem(cartItem);
                                             });
                                           }
                                         },
                                         color: Colors.blue[800],
                                       ),
                                       Text(
-                                        '${item.quantity}',
+                                        '${cartItem.quantity}',
                                         style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                                       ),
                                       IconButton(
                                         icon: const Icon(Icons.add_circle_outline),
                                         onPressed: () {
                                           setState(() {
-                                            item.quantity++;
-                                          _controller.updateCartItem(item);
+                                            cartItem.quantity++;
+                                          _controller.updateCartItem(cartItem);
                                           });
                                         },
                                         color: Colors.blue[800],
@@ -123,7 +121,7 @@ class _CartPageState extends State<CartPage> {
                               ),
                             ),
                             Text(
-                              '\$${(item.price * item.quantity).toStringAsFixed(2)}',
+                              '\$${(product.precio * cartItem.quantity).toStringAsFixed(2)}',
                               style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
                             ),
                           ],
