@@ -1,8 +1,9 @@
 import 'package:ferreteria/models/cart_item.dart';
 
 class Order {
-  final String id;
+  final int id;
   final String clientName;
+  final int clientId;
   final String date;
   final int quantity;
   final double totalAmount;
@@ -10,6 +11,7 @@ class Order {
 
   Order({
     required this.id,
+    required this.clientId,
     required this.clientName,
     required this.date,
     required this.quantity,
@@ -20,6 +22,7 @@ class Order {
   factory Order.fromJson(Map<String, dynamic> json) {
     return Order(
       id: json['id'],
+      clientId: json['clientId'],
       clientName: json['clientName'],
       date: json['date'],
       quantity: json['quantity'],
@@ -33,6 +36,7 @@ class Order {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
+      'clientId': clientId,
       'clientName': clientName,
       'date': date,
       'quantity': quantity,

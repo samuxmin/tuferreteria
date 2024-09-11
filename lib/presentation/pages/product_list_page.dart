@@ -1,5 +1,5 @@
 import 'package:ferreteria/controller/controller.dart';
-import 'package:ferreteria/models/producto.dart';
+import 'package:ferreteria/models/product.dart';
 import 'package:ferreteria/presentation/pages/product_detail_page.dart';
 import 'package:flutter/material.dart';
 import 'package:ferreteria/presentation/widgets/product_card.dart';
@@ -92,9 +92,9 @@ class _ProductListPageState extends State<ProductListPage> {
                           itemBuilder: (context, index) {
                             final product = controller.productos[index]; // Producto del controlador
                             return ProductCard(
-                              name: product.nombre ,
-                              price: product.precio,
-                              image: product.imagen,
+                              name: product.name ,
+                              price: product.price,
+                              image: product.image,
                               onTap: () {
                                 Navigator.of(context).push(MaterialPageRoute(
                                   builder: (context) => ProductDetailPage(

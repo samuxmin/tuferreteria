@@ -1,7 +1,8 @@
 import 'package:ferreteria/models/cart_item.dart';
+import 'package:ferreteria/presentation/pages/product_order_history_page.dart';
 import 'package:flutter/material.dart';
 import 'package:ferreteria/controller/controller.dart';
-import 'package:ferreteria/models/producto.dart';
+import 'package:ferreteria/models/product.dart';
 import 'package:ferreteria/presentation/pages/edit_product_page.dart';
 import 'package:ferreteria/presentation/pages/order_history_page.dart';
 import 'package:provider/provider.dart';
@@ -22,7 +23,7 @@ class ProductDetailPage extends StatefulWidget {
 
 class _ProductDetailPageState extends State<ProductDetailPage> {
 
-  late Future<Producto?> _productFuture;
+  late Future<Product?> _productFuture;
   int quantity = 1;
 
   @override
@@ -58,18 +59,22 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             IconButton(
               icon: const Icon(Icons.history),
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const OrderHistoryPage(),
-                  ),
-                );
+                _productFuture.then((product) {
+                  if (product != null) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ProductOrderHistoryPage(product: product),
+                      ),
+                    );
+                  }
+                });
               },
             ),
           ],
         ],
       ),
-      body: FutureBuilder<Producto?>(
+      body: FutureBuilder<Product?>(
         future: _productFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -86,19 +91,17 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Image.network(
-                    product.imagen ?? 'https://placeholder.com/300',
-                    height: 200,
-                    width: double.infinity,
+                    product.image ,
                     fit: BoxFit.cover,
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    product.nombre ?? '',
+                    product.name ?? '',
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    '\$${product.precio?.toStringAsFixed(2) ?? '0.00'}',
+                    '\$${product.price?.toStringAsFixed(2) ?? '0.00'}',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                           color: Colors.blue[800],
                           fontWeight: FontWeight.bold,
@@ -113,7 +116,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    product.descripcion ?? '',
+                    product.description ?? '',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: Colors.grey[800],
                         ),

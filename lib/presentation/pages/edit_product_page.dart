@@ -1,10 +1,10 @@
 import 'package:ferreteria/controller/controller.dart';
 import 'package:flutter/material.dart';
-import 'package:ferreteria/models/producto.dart';
+import 'package:ferreteria/models/product.dart';
 import 'package:provider/provider.dart';
 
 class EditProductPage extends StatefulWidget {
-  final Producto product;
+  final Product product;
 
   const EditProductPage({super.key, required this.product});
 
@@ -23,11 +23,11 @@ class EditProductPageState extends State<EditProductPage> {
   @override
   void initState() {
     super.initState();
-    _nameController = TextEditingController(text: widget.product.nombre);
-    _descriptionController = TextEditingController(text: widget.product.descripcion);
-    _priceController = TextEditingController(text: widget.product.precio?.toString() ?? '');
+    _nameController = TextEditingController(text: widget.product.name);
+    _descriptionController = TextEditingController(text: widget.product.description);
+    _priceController = TextEditingController(text: widget.product.price?.toString() ?? '');
     _stockController = TextEditingController(text: widget.product.stock?.toString() ?? '');
-    _imageUrlController = TextEditingController(text: widget.product.imagen);
+    _imageUrlController = TextEditingController(text: widget.product.image);
   }
 
   @override
@@ -178,13 +178,13 @@ class EditProductPageState extends State<EditProductPage> {
                 ),
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
-                    final updatedProduct = Producto(
+                    final updatedProduct = Product(
                       id: widget.product.id,
-                      nombre: _nameController.text,
-                      descripcion: _descriptionController.text,
-                      precio: double.parse(_priceController.text),
+                      name: _nameController.text,
+                      description: _descriptionController.text,
+                      price: double.parse(_priceController.text),
                       stock: int.parse(_stockController.text),
-                      imagen: _imageUrlController.text,
+                      image: _imageUrlController.text,
                     );
                     await controller.updateProduct(updatedProduct);
                     ScaffoldMessenger.of(context).showSnackBar(

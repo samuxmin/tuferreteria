@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ferreteria/controller/controller.dart'; // Asegúrate de importar tu controlador
-import 'package:ferreteria/models/producto.dart';
+import 'package:ferreteria/models/product.dart';
 import 'package:provider/provider.dart'; // Asegúrate de que la clase Producto esté importada
 
 class NewProductPage extends StatefulWidget {
@@ -161,13 +161,13 @@ class NewProductPageState extends State<NewProductPage> {
                   if (_formKey.currentState!.validate()) {
                     _formKey.currentState!.save();
                     // Aquí se llama al controlador para agregar el producto
-                    controller.addProduct(Producto(
+                    controller.addProduct(Product(
                         id: 0,
-                        nombre: _name!,
-                        descripcion: _description!,
-                        precio: _price!,
+                        name: _name!,
+                        description: _description!,
+                        price: _price!,
                         stock: _stock!,
-                        imagen: ""));
+                        image: ""));
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                           content: Text('Producto creado exitosamente')),

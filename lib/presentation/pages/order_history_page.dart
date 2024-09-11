@@ -23,7 +23,7 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
   @override
   Widget build(BuildContext context) {
     final controller = Provider.of<Controller>(context); // Obtiene el controlador de Provider
-    _ordersFuture = controller.getOrders();
+    _ordersFuture = controller.getUserOrders();
     return Scaffold(
       appBar: AppBar(
         title: const Text('Historial de Compras'),
@@ -48,7 +48,7 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
                   trailing: Text('\$${order.totalAmount.toStringAsFixed(2)}'),
                   onTap: () {
                     Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => OrderDetailPage(orderId: order.id),
+                      builder: (context) => OrderDetailPage(order: order,),
                     ));
                   },
                 );

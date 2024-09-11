@@ -51,7 +51,7 @@ class _CartPageState extends State<CartPage> {
             return const Center(child: Text('El carrito está vacío.'));
           } else if (snapshot.hasData) {
             final cartItems = snapshot.data!;
-            double total = cartItems.fold(0, (sum, item) => sum + (item.product.precio * item.quantity));
+            double total = cartItems.fold(0, (sum, item) => sum + (item.product.price * item.quantity));
 
             return Column(
               children: [
@@ -82,13 +82,13 @@ class _CartPageState extends State<CartPage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    product.nombre,
+                                    product.name,
                                     style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
                                   ),
                                   
                                   const SizedBox(height: 4),
                                   Text(
-                                    '\$${product.precio.toStringAsFixed(2)}',
+                                    '\$${product.price.toStringAsFixed(2)}',
                                     style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
                                   ),
                                   const SizedBox(height: 8),
@@ -102,6 +102,8 @@ class _CartPageState extends State<CartPage> {
                                               cartItem.quantity--;
                                               controller.updateCartItem(cartItem);
                                             });
+                                          }else {
+                                            controller.removeFromCart(cartItem);
                                           }
                                         },
                                         color: Colors.blue[800],
@@ -126,7 +128,7 @@ class _CartPageState extends State<CartPage> {
                               ),
                             ),
                             Text(
-                              '\$${(product.precio * cartItem.quantity).toStringAsFixed(2)}',
+                              '\$${(product.price * cartItem.quantity).toStringAsFixed(2)}',
                               style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
                             ),
                           ],
@@ -161,11 +163,40 @@ class _CartPageState extends State<CartPage> {
                             ),
                             elevation: 2,
                           ),
-                          onPressed: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Procesando pago...')),
-                            );
-                          },
+                          onPressed: () async {
+  bool? confirmed = await showDialog<bool>(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text('Confirmar compra'),
+        content: const Text('¿Estás seguro de que deseas procesar el pago?'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(false); // Cierra el diálogo y devuelve false
+            },
+            child: const Text('Cancelar'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).pop(true); // Cierra el diálogo y devuelve true
+            },
+            child: const Text('Confirmar'),
+          ),
+        ],
+      );
+    },
+  );
+
+  if (confirmed == true) {
+    // Si el usuario confirma, realiza el pago
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Procesando pago...')),
+    );
+    await controller.buyCart();
+  }
+},
+
                           child: const Text('Pagar', style: TextStyle(fontSize: 16)),
                         ),
                       ),
