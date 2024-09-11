@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ferreteria/controller/controller.dart'; // Asegúrate de importar tu controlador
-import 'package:ferreteria/models/producto.dart'; // Asegúrate de que la clase Producto esté importada
+import 'package:ferreteria/models/producto.dart';
+import 'package:provider/provider.dart'; // Asegúrate de que la clase Producto esté importada
 
 class NewProductPage extends StatefulWidget {
   const NewProductPage({super.key});
@@ -15,10 +16,15 @@ class NewProductPageState extends State<NewProductPage> {
   String? _description;
   double? _price;
   int? _stock;
-  final Controller _controller = Controller(); // Instancia del controlador
+
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
+    final controller =
+        Provider.of<Controller>(context); // Obtiene el controlador de Provider
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -37,9 +43,9 @@ class NewProductPageState extends State<NewProductPage> {
               Text(
                 'Ingresa los detalles del nuevo producto',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 32),
@@ -155,21 +161,22 @@ class NewProductPageState extends State<NewProductPage> {
                   if (_formKey.currentState!.validate()) {
                     _formKey.currentState!.save();
                     // Aquí se llama al controlador para agregar el producto
-                    _controller.addProduct(Producto(
-                      id:0,
-                      nombre: _name!,
-                      descripcion: _description!,
-                      precio: _price!,
-                      stock: _stock!,
-                      imagen: ""
-                    ));
+                    controller.addProduct(Producto(
+                        id: 0,
+                        nombre: _name!,
+                        descripcion: _description!,
+                        precio: _price!,
+                        stock: _stock!,
+                        imagen: ""));
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Producto creado exitosamente')),
+                      const SnackBar(
+                          content: Text('Producto creado exitosamente')),
                     );
                     Navigator.of(context).pop();
                   }
                 },
-                child: const Text('Crear producto', style: TextStyle(fontSize: 16)),
+                child: const Text('Crear producto',
+                    style: TextStyle(fontSize: 16)),
               ),
             ],
           ),

@@ -4,6 +4,7 @@ import 'package:ferreteria/controller/controller.dart';
 import 'package:ferreteria/models/producto.dart';
 import 'package:ferreteria/presentation/pages/edit_product_page.dart';
 import 'package:ferreteria/presentation/pages/order_history_page.dart';
+import 'package:provider/provider.dart';
 
 class ProductDetailPage extends StatefulWidget {
   final int productId;
@@ -20,18 +21,20 @@ class ProductDetailPage extends StatefulWidget {
 }
 
 class _ProductDetailPageState extends State<ProductDetailPage> {
-  final Controller _controller = Controller();
+
   late Future<Producto?> _productFuture;
   int quantity = 1;
 
   @override
   void initState() {
     super.initState();
-    _productFuture = _controller.getProduct(widget.productId);
   }
 
   @override
   Widget build(BuildContext context) {
+    final controller = Provider.of<Controller>(context); // Obtiene el controlador de Provider
+
+    _productFuture = controller.getProduct(widget.productId);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Detalle del Producto'),
@@ -176,7 +179,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                             ),
                           );
                           // Lógica para añadir al carrito
-                          _controller.addToCart(CartItem(product:product, quantity: quantity));
+                          controller.addToCart(CartItem(product:product, quantity: quantity));
                         },
                         child: const Text('Añadir al carrito', style: TextStyle(fontSize: 16)),
                       ),

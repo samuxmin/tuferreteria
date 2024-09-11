@@ -3,8 +3,9 @@ import 'package:ferreteria/models/login_response.dart';
 import 'package:ferreteria/models/producto.dart';
 import 'package:ferreteria/models/order.dart';
 import 'package:ferreteria/models/cart_item.dart';
+import 'package:flutter/material.dart';
 
-class Controller {
+class Controller with ChangeNotifier {
   bool admin = false;
 /*
 
@@ -133,7 +134,7 @@ class Controller {
   //* EMPIEZA EL MOCK
 
   Future<bool> isAdmin() async {
-    return admin;
+    return true; //admin;
   }
 
   List<Producto> productos = [
@@ -228,22 +229,25 @@ class Controller {
   }
 
   Future<void> addProduct(Producto product) async {
-    product.id = productos.length;
+    product.id = productos.length + 1;
     print("nuevo producto: ${product.id}");
 
     productos.add(product);
     productos.forEach((Producto p) {
       print(p.nombre);
     });
+    notifyListeners();
   }
 
   Future<void> updateProduct(Producto product) async {
     final index = productos.indexWhere((element) => element.id == product.id);
     productos[index] = product;
+    notifyListeners();
   }
 
   Future<void> deleteProduct(int id) async {
     productos.removeWhere((element) => element.id == id);
+    notifyListeners();
   }
 
   // Órdenes
@@ -263,17 +267,20 @@ class Controller {
   Future<void> addToCart(CartItem item) async {
     cartItemsMock.add(item);
     print('Adding to cart: ${item.product.nombre}');
+    notifyListeners();
   }
 
   Future<void> updateCartItem(CartItem item) async {
     cartItemsMock[cartItemsMock
         .indexWhere((element) => element.product.nombre == item.product.nombre)] = item;
     print('Updating cart item: ${item.product.nombre}');
+    notifyListeners();
   }
 
   Future<void> removeFromCart(String itemName, int amount) async {
     cartItemsMock.removeWhere((element) => element.product.nombre == itemName);
     print('Removing from cart: $itemName');
+    notifyListeners();
   }
 
   // Autenticación

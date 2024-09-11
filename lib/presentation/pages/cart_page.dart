@@ -1,6 +1,7 @@
 import 'package:ferreteria/controller/controller.dart';
 import 'package:ferreteria/models/cart_item.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class CartPage extends StatefulWidget {
   const CartPage({super.key});
@@ -11,16 +12,20 @@ class CartPage extends StatefulWidget {
 
 class _CartPageState extends State<CartPage> {
   late Future<List<CartItem>> cartItems;
-  final Controller _controller = Controller();
+
 
   @override
   void initState() {
     super.initState();
-    cartItems = _controller.getCartItems();
+    
   }
 
   @override
   Widget build(BuildContext context) {
+    
+    final controller = Provider.of<Controller>(context); // Obtiene el controlador de Provider
+    cartItems = controller.getCartItems();
+
     final theme = Theme.of(context);
 
     return Scaffold(
@@ -95,7 +100,7 @@ class _CartPageState extends State<CartPage> {
                                           if (cartItem.quantity > 1) {
                                             setState(() {
                                               cartItem.quantity--;
-                                              _controller.updateCartItem(cartItem);
+                                              controller.updateCartItem(cartItem);
                                             });
                                           }
                                         },
@@ -110,7 +115,7 @@ class _CartPageState extends State<CartPage> {
                                         onPressed: () {
                                           setState(() {
                                             cartItem.quantity++;
-                                          _controller.updateCartItem(cartItem);
+                                          controller.updateCartItem(cartItem);
                                           });
                                         },
                                         color: Colors.blue[800],

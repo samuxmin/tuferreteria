@@ -1,6 +1,7 @@
-import 'package:flutter/material.dart';
 import 'package:ferreteria/controller/controller.dart';
+import 'package:flutter/material.dart';
 import 'package:ferreteria/models/producto.dart';
+import 'package:provider/provider.dart';
 
 class EditProductPage extends StatefulWidget {
   final Producto product;
@@ -13,7 +14,6 @@ class EditProductPage extends StatefulWidget {
 
 class EditProductPageState extends State<EditProductPage> {
   final _formKey = GlobalKey<FormState>();
-  final Controller _controller = Controller();
   late TextEditingController _nameController;
   late TextEditingController _descriptionController;
   late TextEditingController _priceController;
@@ -42,6 +42,7 @@ class EditProductPageState extends State<EditProductPage> {
 
   @override
   Widget build(BuildContext context) {
+    final controller = Provider.of<Controller>(context); // Obtiene el controlador de Provider
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -185,7 +186,7 @@ class EditProductPageState extends State<EditProductPage> {
                       stock: int.parse(_stockController.text),
                       imagen: _imageUrlController.text,
                     );
-                    await _controller.updateProduct(updatedProduct);
+                    await controller.updateProduct(updatedProduct);
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('Cambios guardados')),
                     );
