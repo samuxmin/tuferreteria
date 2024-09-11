@@ -134,15 +134,15 @@ class Controller with ChangeNotifier {
   //* EMPIEZA EL MOCK
 
   Future<bool> isAdmin() async {
-    return true; //admin;
+    return admin;
   }
-
+  String randomImageApi =   "https://random.imagecdn.app/500/500";
   List<Producto> productos = [
     Producto(
         id: 1,
         descripcion: "prod1",
         imagen:
-            "https://cdn.discordapp.com/avatars/842525351698890752/98c10f1dc07badde3903e271e7f35131.png?size=1024",
+            "https://random.imagecdn.app/500/500",
         nombre: "prod1",
         precio: 12.5,
         stock: 10),
@@ -150,7 +150,7 @@ class Controller with ChangeNotifier {
         id: 2,
         descripcion: "prod2",
         imagen:
-            "https://cdn.discordapp.com/avatars/842525351698890752/98c10f1dc07badde3903e271e7f35131.png?size=1024",
+            "https://random.imagecdn.app/500/500",
         nombre: "prod2",
         precio: 12.5,
         stock: 12),
@@ -158,7 +158,7 @@ class Controller with ChangeNotifier {
         id: 3,
         descripcion: "prod3",
         imagen:
-            "https://cdn.discordapp.com/avatars/842525351698890752/98c10f1dc07badde3903e271e7f35131.png?size=1024",
+            "https://random.imagecdn.app/500/500",
         nombre: "prod3",
         precio: 12.5,
         stock: 13),
@@ -166,7 +166,7 @@ class Controller with ChangeNotifier {
         id: 4,
         descripcion: "prod4",
         imagen:
-            "https://cdn.discordapp.com/avatars/842525351698890752/98c10f1dc07badde3903e271e7f35131.png?size=1024",
+            "https://random.imagecdn.app/500/500",
         nombre: "prod4",
         precio: 12.5,
         stock: 14)
@@ -178,7 +178,7 @@ class Controller with ChangeNotifier {
             id: 1,
             descripcion: "prod1",
             imagen:
-                "https://cdn.discordapp.com/avatars/842525351698890752/98c10f1dc07badde3903e271e7f35131.png?size=1024",
+                "https://random.imagecdn.app/500/500",
             nombre: "prod1",
             precio: 12.5,
             stock: 10),
@@ -188,7 +188,7 @@ class Controller with ChangeNotifier {
             id: 4,
             descripcion: "prod4",
             imagen:
-                "https://cdn.discordapp.com/avatars/842525351698890752/98c10f1dc07badde3903e271e7f35131.png?size=1024",
+                "https://random.imagecdn.app/500/500",
             nombre: "prod4",
             precio: 12.5,
             stock: 14),
@@ -293,6 +293,8 @@ class Controller with ChangeNotifier {
     if (email == 'admin') {
       admin = true;
       return LoginResponse(logged: true, token: ' token', isAdmin: true);
+    } if( email =="error"){
+      return LoginResponse(logged: false, token: '', isAdmin: false);
     } else {
       admin = false;
       return LoginResponse(logged: true, token: 'token', isAdmin: false);

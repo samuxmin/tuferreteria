@@ -1,4 +1,6 @@
+import 'package:ferreteria/controller/controller.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class OrderDetailPage extends StatelessWidget {
   final String orderId;
@@ -39,6 +41,8 @@ class OrderDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    
+    final controller = Provider.of<Controller>(context); // Obtiene el controlador de Provider
     int totalProducts = orderDetails['products'].length;
     double totalAmount = orderDetails['products'].fold(0, (sum, product) => sum + (product['quantity'] * product['unitPrice']));
 

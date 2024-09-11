@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:ferreteria/presentation/pages/order_detail_page.dart';
 import 'package:ferreteria/controller/controller.dart';
 import 'package:ferreteria/models/order.dart';
+import 'package:provider/provider.dart';
 
 class OrderHistoryPage extends StatefulWidget {
   const OrderHistoryPage({super.key});
@@ -11,17 +12,18 @@ class OrderHistoryPage extends StatefulWidget {
 }
 
 class _OrderHistoryPageState extends State<OrderHistoryPage> {
-  final Controller _controller = Controller();
+
   late Future<List<Order>> _ordersFuture;
 
   @override
   void initState() {
     super.initState();
-    _ordersFuture = _controller.getOrders();
   }
 
   @override
   Widget build(BuildContext context) {
+    final controller = Provider.of<Controller>(context); // Obtiene el controlador de Provider
+    _ordersFuture = controller.getOrders();
     return Scaffold(
       appBar: AppBar(
         title: const Text('Historial de Compras'),

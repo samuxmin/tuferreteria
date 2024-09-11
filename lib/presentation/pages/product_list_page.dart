@@ -94,6 +94,7 @@ class _ProductListPageState extends State<ProductListPage> {
                             return ProductCard(
                               name: product.nombre ,
                               price: product.precio,
+                              image: product.imagen,
                               onTap: () {
                                 Navigator.of(context).push(MaterialPageRoute(
                                   builder: (context) => ProductDetailPage(

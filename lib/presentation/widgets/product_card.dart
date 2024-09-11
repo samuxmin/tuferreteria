@@ -3,12 +3,14 @@ import 'package:flutter/material.dart';
 class ProductCard extends StatelessWidget {
   final String name;
   final double price;
+  final String image;
   final VoidCallback onTap;
 
   const ProductCard({
     super.key,
     required this.name,
     required this.price,
+    required this.image,
     required this.onTap,
   });
 
@@ -24,7 +26,17 @@ class ProductCard extends StatelessWidget {
               child: Container(
                 color: Colors.grey[200],
                 child: Center(
-                  child: Icon(Icons.image, size: 50, color: Colors.grey[400]),
+                  child: image.isNotEmpty 
+                    ? Image.network(
+                        image, 
+                        fit: BoxFit.cover, 
+                        width: double.infinity, 
+                        height: double.infinity,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Icon(Icons.broken_image, size: 50, color: Colors.grey[400]);
+                        },
+                      )
+                    : Icon(Icons.image, size: 50, color: Colors.grey[400]),
                 ),
               ),
             ),
