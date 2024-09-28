@@ -55,7 +55,7 @@ class _ProductOrderHistoryPageState extends State<ProductOrderHistoryPage> {
                     children: [
                       Text('Producto: ${product.name}'),
                       Text('Cantidad: ${orderItem.quantity} * \$${product.price.toStringAsFixed(2)}'),
-                      Text('Total: \$${(product.price * orderItem.quantity).toStringAsFixed(2)}'),
+                      Text('Total: \$${(orderItem.purchaseUnitPrice * orderItem.quantity).toStringAsFixed(2)}'),
                       FutureBuilder<Order?>(
                         future: Provider.of<Controller>(context, listen: false).getOrderDetails(orderItem.orderId),
                         builder: (context, snapshot) {

@@ -10,33 +10,37 @@ import 'package:flutter/material.dart';
 class Controller with ChangeNotifier {
   bool admin = false;
   User loggedUser = User(id: 0, email: '', name: '' ,password: '');
-/*
+  List<Product> productos = [];
 
   final Dio _dio = Dio();
-  static const String _baseUrl = "https://backend/api";
+  static const String _baseUrl = "http://localhost:8889/api/v1/";
 
+Future<bool> isAdmin()async{
+  return false;
+}
   // Productos
-  Future<List<Producto>> getProducts() async {
+  Future<List<Product>> getProducts() async {
     try {
       final response = await _dio.get('$_baseUrl/products');
-      return (response.data as List).map((item) => Producto.fromJson(item)).toList();
+      productos = (response.data as List).map((item) => Product.fromJson(item)).toList();
+      return productos;
     } catch (e) {
       print('Error fetching products: $e');
       return [];
     }
   }
 
-  Future<Producto?> getProduct(int id) async {
+  Future<Product?> getProduct(int id) async {
     try {
       final response = await _dio.get('$_baseUrl/products/$id');
-      return Producto.fromJson(response.data);
+      return Product.fromJson(response.data);
     } catch (e) {
       print('Error fetching product: $e');
       return null;
     }
   }
 
-  Future<void> addProduct(Producto product) async {
+  Future<void> addProduct(Product product) async {
     try {
       await _dio.post('$_baseUrl/products', data: product.toJson());
     } catch (e) {
@@ -44,9 +48,9 @@ class Controller with ChangeNotifier {
     }
   }
 
-  Future<void> updateProduct(Producto product) async {
+  Future<void> updateProduct(Product product) async {
     try {
-      await _dio.put('$_baseUrl/products/${product.id}', data: product.toJson());
+      await _dio.put('$_baseUrl/products', data: product.toJson());
     } catch (e) {
       print('Error updating product: $e');
     }
@@ -59,19 +63,22 @@ class Controller with ChangeNotifier {
       print('Error deleting product: $e');
     }
   }
-
+  Future<List<Order>> getUserOrders() async{
+    final response = await _dio.get('$_baseUrl/order/user/2');
+    return (response.data as List).map((item) => Order.fromJson(item)).toList();
+  }
   // Órdenes
-  Future<List<Order>> getOrders() async {
+  Future<List<OrderItem>> getProductOrders(int id) async {
     try {
-      final response = await _dio.get('$_baseUrl/orders');
-      return (response.data as List).map((item) => Order.fromJson(item)).toList();
+      final response = await _dio.get('$_baseUrl/orders/product/$id');
+      return (response.data as List).map((item) => OrderItem.fromJson(item)).toList();
     } catch (e) {
       print('Error fetching orders: $e');
       return [];
     }
   }
 
-  Future<Order?> getOrderDetails(String orderId) async {
+  Future<Order?> getOrderDetails(int orderId) async {
     try {
       final response = await _dio.get('$_baseUrl/orders/$orderId');
       return Order.fromJson(response.data);
@@ -102,24 +109,24 @@ class Controller with ChangeNotifier {
 
   Future<void> updateCartItem(CartItem item) async {
     try {
-      await _dio.put('$_baseUrl/cart/${item.name}', data: item.toJson());
+      await _dio.put('$_baseUrl/cart/${item.product.name}', data: item.toJson());
     } catch (e) {
       print('Error updating cart item: $e');
     }
   }
 
-  Future<void> removeFromCart(String itemName,int amount) async {
+  Future<void> removeFromCart(CartItem item) async {
     try {
-      await _dio.post('$_baseUrl/cart/$itemName/remove', data:{amount});
+      await _dio.post('$_baseUrl/cart/${item.product.id}/remove', data:{item.quantity});
     } catch (e) {
       print('Error removing item from cart: $e');
     }
   }
 
-  // Autenticación
-  Future<void> register(String email, String password) async {
+  // Autenticación,
+  Future<void> register(String name, String email, String password) async {
     try {
-      await _dio.post('$_baseUrl/register', data: {'email': email, 'password': password});
+      await _dio.post('$_baseUrl/register', data: {'name':name,'email': email, 'password': password});
     } catch (e) {
       print('Error registering user: $e');
     }
@@ -127,14 +134,17 @@ class Controller with ChangeNotifier {
 
   Future<LoginResponse> login(String email, String password) async {
     try {
-      final response = await _dio.post('$_baseUrl/login', data: {'email': email, 'password': password});
+      final response = await _dio.post('$_baseUrl/auth', data: {'email': email, 'password': password});
       return LoginResponse.fromJson(response.data);
     } catch (e) {
       print('Error logging in: $e');
       return LoginResponse(logged: false, token: "", isAdmin: false);
     }
-  }*/
-  //* EMPIEZA EL MOCK
+  }
+  Future<void> buyCart()async{
+
+  }
+  /* EMPIEZA EL MOCK
 
   Future<bool> isAdmin() async {
     return admin;
@@ -330,5 +340,5 @@ class Controller with ChangeNotifier {
       admin = false;
       return LoginResponse(logged: true, token: 'token', isAdmin: false, user: loggedUser);
     }
-  }
+  }*/
 }

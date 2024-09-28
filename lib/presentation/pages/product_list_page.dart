@@ -14,7 +14,7 @@ class ProductListPage extends StatefulWidget {
 
 class _ProductListPageState extends State<ProductListPage> {
   late Future<bool> _isAdminFuture;
-
+  late Future<List<Product>> products;
   @override
   void initState() {
     super.initState();
