@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:ferreteria/helpers/image_converter.dart';
 
 class ProductCard extends StatelessWidget {
   final String name;
   final double price;
+
   final String image;
   final VoidCallback onTap;
 
@@ -16,6 +18,8 @@ class ProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+  var decodedImg = dataFromBase64String(image);
+
     return Card(
       child: InkWell(
         onTap: onTap,
@@ -27,8 +31,8 @@ class ProductCard extends StatelessWidget {
                 color: Colors.grey[200],
                 child: Center(
                   child: image.isNotEmpty 
-                    ? Image.network(
-                        image, 
+                    ? Image.memory(
+                        decodedImg, 
                         fit: BoxFit.cover, 
                         width: double.infinity, 
                         height: double.infinity,

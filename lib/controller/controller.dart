@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:ferreteria/models/login_response.dart';
 import 'package:ferreteria/models/order_item.dart';
@@ -6,24 +8,41 @@ import 'package:ferreteria/models/order.dart';
 import 'package:ferreteria/models/cart_item.dart';
 import 'package:ferreteria/models/user.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_session_jwt/flutter_session_jwt.dart';
+import 'package:http/http.dart' as http;
 
 class Controller with ChangeNotifier {
   bool admin = false;
-  User loggedUser = User(id: 0, email: '', name: '' ,password: '');
+  User loggedUser = User(id: 0, email: '', name: '', password: '');
+  String? token;
   List<Product> productos = [];
+  String baseUrl = 'http://localhost:8889/api/v1';
 
-  final Dio _dio = Dio();
-  static const String _baseUrl = "http://localhost:8889/api/v1/";
+  Future<bool> isAdmin() async {
+    return admin;
+  }
 
-Future<bool> isAdmin()async{
-  return false;
-}
-  // Productos
   Future<List<Product>> getProducts() async {
     try {
-      final response = await _dio.get('$_baseUrl/products');
-      productos = (response.data as List).map((item) => Product.fromJson(item)).toList();
-      return productos;
+      var url = Uri.parse('$baseUrl/products');
+      final response = await http.get(
+        url,
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token'
+        },
+      );
+      if (response.statusCode == 200) {
+        var data =
+            jsonDecode(response.body) as List; // Decodifica el JSON a una lista
+        productos = data
+            .map((item) => Product.fromJson(item))
+            .toList(); // Asegúrate de convertirlo a List<Product>
+        return productos;
+      } else {
+        print('Error fetching products: ${response.statusCode}');
+        return [];
+      }
     } catch (e) {
       print('Error fetching products: $e');
       return [];
@@ -32,8 +51,17 @@ Future<bool> isAdmin()async{
 
   Future<Product?> getProduct(int id) async {
     try {
-      final response = await _dio.get('$_baseUrl/products/$id');
-      return Product.fromJson(response.data);
+      var url = Uri.parse('$baseUrl/products/$id');
+      final response = await http.get(url, headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token'
+      });
+      if (response.statusCode == 200) {
+        return Product.fromJson(jsonDecode(response.body));
+      } else {
+        print('Error fetching product: ${response.statusCode}');
+        return null;
+      }
     } catch (e) {
       print('Error fetching product: $e');
       return null;
@@ -42,9 +70,23 @@ Future<bool> isAdmin()async{
 
   Future<void> addProduct(Product product) async {
     try {
-      await _dio.post('$_baseUrl/products', data: product.toJson());
-      //productos.add(product);
-      notifyListeners();
+      var url = Uri.parse('$baseUrl/products');
+
+      final response = await http.post(
+        url,
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token'
+        },
+        body: jsonEncode(product.toJson()),
+      );
+      if (response.statusCode == 200) {
+        productos.add(product);
+        print("Product added successfully");
+        notifyListeners();
+      } else {
+        print('Error adding product: ${response.statusCode}');
+      }
     } catch (e) {
       print('Error adding product: $e');
     }
@@ -52,10 +94,23 @@ Future<bool> isAdmin()async{
 
   Future<void> updateProduct(Product product) async {
     try {
-      await _dio.put('$_baseUrl/products', data: product.toJson());
-      //final index = productos.indexWhere((element) => element.id == product.id);
-     // productos[index] = product;
-      notifyListeners();
+      var url = Uri.parse('$baseUrl/products');
+      final response = await http.put(
+        url,
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token'
+        },
+        body: jsonEncode(product.toJson()),
+      );
+      if (response.statusCode == 200) {
+        print("Product updated successfully");
+        final index = productos.indexWhere((element) => element.id == product.id);
+        productos[index] = product;
+        notifyListeners();
+      } else {
+        print('Error updating product: ${response.statusCode}');
+      }
     } catch (e) {
       print('Error updating product: $e');
     }
@@ -63,32 +118,90 @@ Future<bool> isAdmin()async{
 
   Future<void> deleteProduct(int id) async {
     try {
-      await _dio.delete('$_baseUrl/products/$id');
-     //productos.removeWhere((element) => element.id == id);
-      notifyListeners();
+      var url = Uri.parse('$baseUrl/products/$id');
+      final response = await http.delete(
+        url,
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token'
+        },
+      );
+      if (response.statusCode == 200) {
+        print("Product deleted successfully");
+        productos.removeWhere((element) => element.id == id);
+        notifyListeners();
+      } else {
+        print('Error deleting product: ${response.statusCode}');
+      }
     } catch (e) {
       print('Error deleting product: $e');
     }
   }
-  Future<List<Order>> getUserOrders() async{
-    final response = await _dio.get('$_baseUrl/order/user/2');
-    return (response.data as List).map((item) => Order.fromJson(item)).toList();
-  }
+
   // Órdenes
-  Future<List<OrderItem>> getProductOrders(int id) async {
+  Future<List<Order>> getUserOrders() async {
     try {
-      final response = await _dio.get('$_baseUrl/orders/product/$id');
-      return (response.data as List).map((item) => OrderItem.fromJson(item)).toList();
+      var url = Uri.parse('$baseUrl/order/user/2');
+      final response = await http.get(
+        url,
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token'
+        },
+      );
+      if (response.statusCode == 200) {
+        List<dynamic> data = jsonDecode(response.body);
+        return data.map((item) => Order.fromJson(item)).toList();
+      } else {
+        print('Error fetching orders: ${response.statusCode}');
+        return [];
+      }
     } catch (e) {
       print('Error fetching orders: $e');
       return [];
     }
   }
 
+  Future<List<OrderItem>> getProductOrders(int id) async {
+    try {
+      var url = Uri.parse('$baseUrl/orders/product/$id');
+      final response = await http.get(
+        url,
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        List<dynamic> data = jsonDecode(response.body);
+        return data.map((item) => OrderItem.fromJson(item)).toList();
+      } else {
+        print('Error fetching product orders: ${response.statusCode}');
+        return [];
+      }
+    } catch (e) {
+      print('Error fetching product orders: $e');
+      return [];
+    }
+  }
+
   Future<Order?> getOrderDetails(int orderId) async {
     try {
-      final response = await _dio.get('$_baseUrl/orders/$orderId');
-      return Order.fromJson(response.data);
+      var url = Uri.parse('$baseUrl/orders/$orderId');
+      final response = await http.get(
+        url,
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token'
+        },
+      );
+      if (response.statusCode == 200) {
+        return Order.fromJson(jsonDecode(response.body));
+      } else {
+        print('Error fetching order details: ${response.statusCode}');
+        return null;
+      }
     } catch (e) {
       print('Error fetching order details: $e');
       return null;
@@ -98,8 +211,21 @@ Future<bool> isAdmin()async{
   // Carrito
   Future<List<CartItem>> getCartItems() async {
     try {
-      final response = await _dio.get('$_baseUrl/cart');
-      return (response.data as List).map((item) => CartItem.fromJson(item)).toList();
+      var url = Uri.parse('$baseUrl/cart');
+      final response = await http.get(
+        url,
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token'
+        },
+      );
+      if (response.statusCode == 200) {
+        List<dynamic> data = jsonDecode(response.body);
+        return data.map((item) => CartItem.fromJson(item)).toList();
+      } else {
+        print('Error fetching cart items: ${response.statusCode}');
+        return [];
+      }
     } catch (e) {
       print('Error fetching cart items: $e');
       return [];
@@ -108,8 +234,21 @@ Future<bool> isAdmin()async{
 
   Future<void> addToCart(CartItem item) async {
     try {
-      await _dio.post('$_baseUrl/cart', data: item.toJson());
-      notifyListeners();
+      var url = Uri.parse('$baseUrl/cart');
+      final response = await http.post(
+        url,
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token'
+        },
+        body: jsonEncode(item.toJson()),
+      );
+      if (response.statusCode == 201) {
+        print("Item added to cart");
+        notifyListeners();
+      } else {
+        print('Error adding item to cart: ${response.statusCode}');
+      }
     } catch (e) {
       print('Error adding item to cart: $e');
     }
@@ -117,8 +256,21 @@ Future<bool> isAdmin()async{
 
   Future<void> updateCartItem(CartItem item) async {
     try {
-      await _dio.put('$_baseUrl/cart/${item.product.name}', data: item.toJson());
-      notifyListeners();
+      var url = Uri.parse('$baseUrl/cart/${item.product.name}');
+      final response = await http.put(
+        url,
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token'
+        },
+        body: jsonEncode(item.toJson()),
+      );
+      if (response.statusCode == 200) {
+        print("Cart item updated");
+        notifyListeners();
+      } else {
+        print('Error updating cart item: ${response.statusCode}');
+      }
     } catch (e) {
       print('Error updating cart item: $e');
     }
@@ -126,17 +278,46 @@ Future<bool> isAdmin()async{
 
   Future<void> removeFromCart(CartItem item) async {
     try {
-      await _dio.post('$_baseUrl/cart/${item.product.id}/remove', data:{item.quantity});
-      notifyListeners();
+      var url = Uri.parse('$baseUrl/cart/${item.product.id}/remove');
+      final response = await http.post(
+        url,
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token'
+        },
+        body: jsonEncode({"quantity": item.quantity}),
+      );
+      if (response.statusCode == 200) {
+        print("Item removed from cart");
+        notifyListeners();
+      } else {
+        print('Error removing item from cart: ${response.statusCode}');
+      }
     } catch (e) {
       print('Error removing item from cart: $e');
     }
   }
 
-  // Autenticación,
+  // Autenticación
   Future<void> register(String name, String email, String password) async {
     try {
-      await _dio.post('$_baseUrl/register', data: {'name':name,'email': email, 'password': password});
+      var url = Uri.parse('$baseUrl/register');
+      final response = await http.post(
+        url,
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          'name': name,
+          'email': email,
+          'password': password,
+        }),
+      );
+      if (response.statusCode == 201) {
+        print("User registered successfully");
+      } else {
+        print('Error registering user: ${response.statusCode}');
+      }
     } catch (e) {
       print('Error registering user: $e');
     }
@@ -144,14 +325,36 @@ Future<bool> isAdmin()async{
 
   Future<LoginResponse> login(String email, String password) async {
     try {
-      final response = await _dio.post('$_baseUrl/auth', data: {'email': email, 'password': password});
-      return LoginResponse.fromJson(response.data);
+      //final response = await dio.post('$baseUrl/auth', data: {'email': email, 'password': password});
+      var url = Uri.http("localhost:8889", 'api/v1/auth');
+      var response = await http.post(
+        url,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Access-Control-Allow-Origin': "*"
+        },
+        body:
+            jsonEncode(<String, String>{'email': email, 'password': password}),
+      );
+
+      if (response.statusCode == 200) {
+        String tokenRes = jsonDecode(response.body)["token"];
+        await FlutterSessionJwt.saveToken(tokenRes);
+        //This will return payload object/map
+        var payload = await FlutterSessionJwt.getPayload();
+        admin = (payload["user_role"] == "ADMIN");
+        print("admin $admin");
+        token = tokenRes;
+		productos = await getProducts();
+        return LoginResponse(logged: true, token: tokenRes, isAdmin: admin);
+      } else {
+        return LoginResponse(logged: false, token: "", isAdmin: false);
+      }
     } catch (e) {
       print('Error logging in: $e');
       return LoginResponse(logged: false, token: "", isAdmin: false);
     }
   }
-  Future<void> buyCart()async{
-    
-  }
+
+  Future<void> buyCart() async {}
 }

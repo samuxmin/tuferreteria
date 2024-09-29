@@ -5,6 +5,7 @@ import 'package:ferreteria/controller/controller.dart';
 import 'package:ferreteria/models/product.dart';
 import 'package:ferreteria/presentation/pages/edit_product_page.dart';
 import 'package:ferreteria/presentation/pages/order_history_page.dart';
+import 'package:ferreteria/helpers/image_converter.dart';
 import 'package:provider/provider.dart';
 
 class ProductDetailPage extends StatefulWidget {
@@ -90,8 +91,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Image.network(
-                    product.image ,
+                  Image.memory(
+                    dataFromBase64String(product.image) ,
                     fit: BoxFit.cover,
                   ),
                   const SizedBox(height: 16),

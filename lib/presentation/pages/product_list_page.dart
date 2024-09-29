@@ -19,6 +19,7 @@ class _ProductListPageState extends State<ProductListPage> {
   void initState() {
     super.initState();
     _isAdminFuture = Provider.of<Controller>(context, listen: false).isAdmin(); // Cambia según sea admin o no
+    products = Provider.of<Controller>(context, listen: false).getProducts();
   }
 
   @override
