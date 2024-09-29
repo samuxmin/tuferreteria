@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:dio/dio.dart';
 import 'package:ferreteria/models/login_response.dart';
 import 'package:ferreteria/models/order_item.dart';
 import 'package:ferreteria/models/product.dart';

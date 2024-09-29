@@ -1,13 +1,19 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:dio/dio.dart'; // Necesario para las peticiones HTTP
 
 class RegisterController {
-  final Dio _dio = Dio(); // Cliente HTTP
-  final String _baseUrl = 'https://your-api-url.com'; // Base URL para las peticiones
+  final String _baseUrl =
+      'https:localhost:8889/api/v1'; // Base URL para las peticiones
 
   Future<void> register(String name, String email, String password) async {
     try {
-      await _dio.post('$_baseUrl/register', data: {'name': name, 'email': email, 'password': password});
+      await http.post(Uri.parse('$_baseUrl/register'),
+          headers: <String, String>{
+            'Content-Type': 'application/json',
+          },
+          body:
+              jsonEncode({'name': name, 'email': email, 'password': password}));
     } catch (e) {
       print('Error registering user: $e');
     }
@@ -149,7 +155,8 @@ class _RegisterPageState extends State<RegisterPage> {
                   elevation: 2,
                 ),
                 onPressed: _register, // Llama a la función _register
-                child: const Text('Registrarse', style: TextStyle(fontSize: 16)),
+                child:
+                    const Text('Registrarse', style: TextStyle(fontSize: 16)),
               ),
               const SizedBox(height: 16),
               TextButton(
